@@ -1,7 +1,36 @@
-import '../styles/globals.css'
+import React, { useEffect, useState } from 'react'
+import Head from 'next/head'
 
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+import { supabase } from '../utils/supabaseClient'
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    <>
+      <Head>
+        <title>Domo store</title>
+        <meta name="description" content="Domo store stock management" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <SupabaseAuthRedirection />
+      <Component {...pageProps} />
+    </>
+  )
 }
 
-export default MyApp
+function SupabaseAuthRedirection() {
+  const [session, setSession] = useState(
+    /** @type {import('@supabase/gotrue-js').Session?} */ (null)
+  )
+  console.log({ session })
+  console.log({ user: supabase.auth.user() })
+
+  useEffect(() => {
+    setSession(supabase.auth.session())
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+  }, [])
+
+  return null
+}
