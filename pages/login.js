@@ -1,84 +1,90 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { supabase } from 'utils/supabaseClient'
 
-export default function SetPassword() {
+export default function Login() {
   /**
-   * @typedef SetPasswordForm
+   * @typedef LoginForm
+   * @property {string} email
    * @property {string} password
-   * @property {string} confirmPassword
    */
   const {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
     setFocus,
   } = useForm({
-    defaultValues: /** @type {SetPasswordForm} */ ({}),
+    defaultValues: /** @type {LoginForm} */ ({}),
   })
 
   const router = useRouter()
+
+  const [credentialError, setCredentialError] = useState('')
+  const [loading, setLoading] = useState(false)
   /**
    *
-   * @param {SetPasswordForm} data
+   * @param {LoginForm} data
    */
   function onSubmit(data) {
-    supabase.auth.update({ password: data.password }).then(({error}) => {
-      if (!error) {
-      router.push('/')
+    setLoading(true)
+    supabase.auth
+      .signIn({
+        email: data.email,
+        password: data.password,
+      })
+      .then(({ error }) => {
+        setLoading(false)
+        if (!error) {
+          router.push('/')
+        }
 
-      }
-    })
+        setCredentialError('Incorrect email or password.')
+      })
   }
 
   useEffect(() => {
-    setFocus('password')
+    setFocus('email')
   }, [setFocus])
 
   return (
     <div className="h-screen bg-gray-70 grid place-items-center">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="block" htmlFor="password">
-          Password:
+        <ErrorMessage error={credentialError && { message: credentialError }} />
+        <label className="block" htmlFor="email">
+          Email:
+        </label>
+        <input
+          className="mt-1 rounded py-1 px-2 ring(1 gray-400) focus-visible:(ring-2 outline-none)"
+          id="email"
+          {...register('email', {
+            required: 'Email is required.',
+          })}
+          type="email"
+        />
+        <ErrorMessage error={errors.email} />
+        <label className="block mt-2" htmlFor="password">
+          password:
         </label>
         <input
           className="mt-1 rounded py-1 px-2 ring(1 gray-400) focus-visible:(ring-2 outline-none)"
           id="password"
           {...register('password', {
             required: 'Password is required.',
-            minLength: { value: 8, message: 'Password must be at least 8 characters long.' },
           })}
           type="password"
         />
         <ErrorMessage error={errors.password} />
-        <label className="block mt-2" htmlFor="confirmPassword">
-          Confirm password:
-        </label>
-        <input
-          className="mt-1 rounded py-1 px-2 ring(1 gray-400) focus-visible:(ring-2 outline-none)"
-          id="confirmPassword"
-          {...register('confirmPassword', {
-            validate: (confirmedPassword) => {
-              const password = watch('password')
-              if (password) {
-                return confirmedPassword === password || 'Password not matched.'
-              }
-            },
-          })}
-          type="password"
-        />
-        <ErrorMessage error={errors.confirmPassword} />
         <div className="mt-4">
           <button
+            disabled={loading}
             className={`rounded-lg py-2 px-3 
             bg-blue-500 text-white
             outline-none(focus:& focus-visible:&)
             focus:active:(translate-0 bg-blue-500)
             focus-visible:(translate-x-[1px] -translate-y-[1px] bg-blue-600)
             hover:(translate-x-[1px] -translate-y-[1px] bg-blue-600)`}>
-            Set password
+            Login
           </button>
         </div>
       </form>
