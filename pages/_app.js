@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
 
-import { supabase } from '../utils/supabaseClient'
+import { supabase } from 'utils/supabaseClient'
 
 export default function MyApp({ Component, pageProps }) {
   return (
@@ -21,8 +21,6 @@ function SupabaseAuthRedirection() {
   const [session, setSession] = useState(
     /** @type {import('@supabase/gotrue-js').Session?} */ (null)
   )
-  console.log({ session })
-  console.log({ user: supabase.auth.user() })
 
   useEffect(() => {
     setSession(supabase.auth.session())

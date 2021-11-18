@@ -11,10 +11,13 @@
     "@supabase/supabase-js": "^1.28.0",
     "next": "12.0.4",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "react-hook-form": "^7.19.5",
+    "twind": "^0.16.16"
   },
   "devDependencies": {
     "eslint": "7",
-    "eslint-config-next": "12.0.4"
+    "eslint-config-next": "12.0.4",
+    "tailwindcss": "^2.2.19"
   }
 }
