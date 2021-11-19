@@ -4,6 +4,8 @@ import { useRouter } from 'next/router'
 import { supabase } from 'utils/supabaseClient'
 import { Button } from '../components/Button'
 
+import Input from 'components/Input'
+
 export default function Login() {
   /**
    * @typedef LoginForm
@@ -52,11 +54,8 @@ export default function Login() {
     <div className="h-screen bg-gray-70 grid place-items-center">
       <form onSubmit={handleSubmit(onSubmit)}>
         <ErrorMessage error={credentialError && { message: credentialError }} />
-        <label className="block" htmlFor="email">
-          Email:
-        </label>
-        <input
-          className="mt-1 rounded py-1 px-2 ring(1 gray-400) focus-visible:(ring-2 outline-none)"
+        <Input
+          label="Email"
           id="email"
           {...register('email', {
             required: 'Email is required.',
@@ -64,11 +63,9 @@ export default function Login() {
           type="email"
         />
         <ErrorMessage error={errors.email} />
-        <label className="block mt-2" htmlFor="password">
-          password:
-        </label>
-        <input
-          className="mt-1 rounded py-1 px-2 ring(1 gray-400) focus-visible:(ring-2 outline-none)"
+        <Input
+          className="mt-2"
+          label="Password"
           id="password"
           {...register('password', {
             required: 'Password is required.',

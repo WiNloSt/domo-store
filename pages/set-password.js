@@ -1,8 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { supabase } from 'utils/supabaseClient'
 import { Button } from 'components/Button'
+
+import Input from 'components/Input'
 
 export default function SetPassword() {
   /**
@@ -21,12 +23,15 @@ export default function SetPassword() {
   })
 
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
   /**
    *
    * @param {SetPasswordForm} data
    */
   function onSubmit(data) {
+    setLoading(true)
     supabase.auth.update({ password: data.password }).then(({ error }) => {
+      setLoading(false)
       if (!error) {
         router.push('/')
       }
@@ -40,11 +45,8 @@ export default function SetPassword() {
   return (
     <div className="h-screen bg-gray-70 grid place-items-center">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="block" htmlFor="password">
-          Password:
-        </label>
-        <input
-          className="mt-1 rounded py-1 px-2 ring(1 gray-400) focus-visible:(ring-2 outline-none)"
+        <Input
+          label="Password"
           id="password"
           {...register('password', {
             required: 'Password is required.',
@@ -53,11 +55,9 @@ export default function SetPassword() {
           type="password"
         />
         <ErrorMessage error={errors.password} />
-        <label className="block mt-2" htmlFor="confirmPassword">
-          Confirm password:
-        </label>
-        <input
-          className="mt-1 rounded py-1 px-2 ring(1 gray-400) focus-visible:(ring-2 outline-none)"
+        <Input
+          className="mt-2"
+          label="Confirm password"
           id="confirmPassword"
           {...register('confirmPassword', {
             validate: (confirmedPassword) => {
@@ -71,7 +71,7 @@ export default function SetPassword() {
         />
         <ErrorMessage error={errors.confirmPassword} />
         <div className="mt-4">
-          <Button>Set password</Button>
+          <Button disabled={loading}>Set password</Button>
         </div>
       </form>
     </div>
