@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { supabase } from 'utils/supabaseClient'
+import { Button } from 'components/Button'
 
 export default function SetPassword() {
   /**
@@ -25,10 +26,9 @@ export default function SetPassword() {
    * @param {SetPasswordForm} data
    */
   function onSubmit(data) {
-    supabase.auth.update({ password: data.password }).then(({error}) => {
+    supabase.auth.update({ password: data.password }).then(({ error }) => {
       if (!error) {
-      router.push('/')
-
+        router.push('/')
       }
     })
   }
@@ -71,15 +71,7 @@ export default function SetPassword() {
         />
         <ErrorMessage error={errors.confirmPassword} />
         <div className="mt-4">
-          <button
-            className={`rounded-lg py-2 px-3 
-            bg-blue-500 text-white
-            outline-none(focus:& focus-visible:&)
-            focus:active:(translate-0 bg-blue-500)
-            focus-visible:(translate-x-[1px] -translate-y-[1px] bg-blue-600)
-            hover:(translate-x-[1px] -translate-y-[1px] bg-blue-600)`}>
-            Set password
-          </button>
+          <Button>Set password</Button>
         </div>
       </form>
     </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
 import { supabase } from 'utils/supabaseClient'
+import { Button } from '../components/Button'
 
 export default function Login() {
   /**
@@ -37,9 +38,9 @@ export default function Login() {
         setLoading(false)
         if (!error) {
           router.push('/')
+        } else {
+          setCredentialError('Incorrect email or password.')
         }
-
-        setCredentialError('Incorrect email or password.')
       })
   }
 
@@ -76,16 +77,7 @@ export default function Login() {
         />
         <ErrorMessage error={errors.password} />
         <div className="mt-4">
-          <button
-            disabled={loading}
-            className={`rounded-lg py-2 px-3 
-            bg-blue-500 text-white
-            outline-none(focus:& focus-visible:&)
-            focus:active:(translate-0 bg-blue-500)
-            focus-visible:(translate-x-[1px] -translate-y-[1px] bg-blue-600)
-            hover:(translate-x-[1px] -translate-y-[1px] bg-blue-600)`}>
-            Login
-          </button>
+          <Button disabled={loading}>Log in</Button>
         </div>
       </form>
     </div>

@@ -12,5 +12,5 @@
     "baseUrl": "."
   },
   "exclude": ["node_modules", "**/node_modules/*"],
-  "include": ["pages/*", "utils/*"]
+  "include": ["pages/*", "utils/*", "components/*"]
 }
