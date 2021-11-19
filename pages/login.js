@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { supabase } from 'utils/supabaseClient'
 import { Button } from 'components/Button'
 import Input from 'components/Input'
+import { ErrorMessage } from 'components/ErrorMessage'
 
 export default function Login() {
   const router = useRouter()
@@ -55,8 +56,8 @@ export default function Login() {
   }, [setFocus])
 
   return (
-    <div className="h-screen bg-gray-70 grid place-items-center">
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <div className="h-screen grid place-items-center">
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-md w-full">
         <ErrorMessage error={credentialError && { message: credentialError }} />
         <Input
           label="Email"
@@ -86,16 +87,4 @@ export default function Login() {
       </form>
     </div>
   )
-}
-
-function ErrorMessage({ error }) {
-  if (error) {
-    return (
-      <div className="mt-1 text-red-500 whitespace-nowrap w-0">
-        <em>{error.message}</em>
-      </div>
-    )
-  }
-
-  return null
 }

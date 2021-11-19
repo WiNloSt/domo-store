@@ -5,6 +5,7 @@ import { supabase } from 'utils/supabaseClient'
 import { Button } from 'components/Button'
 
 import Input from 'components/Input'
+import { ErrorMessage } from 'components/ErrorMessage'
 
 export default function SetPassword() {
   /**
@@ -43,8 +44,8 @@ export default function SetPassword() {
   }, [setFocus])
 
   return (
-    <div className="h-screen bg-gray-70 grid place-items-center">
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <div className="h-screen grid place-items-center">
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-md w-full">
         <Input
           label="Password"
           id="password"
@@ -76,16 +77,4 @@ export default function SetPassword() {
       </form>
     </div>
   )
-}
-
-function ErrorMessage({ error }) {
-  if (error) {
-    return (
-      <div className="mt-1 text-red-500 whitespace-nowrap w-0">
-        <em>{error.message}</em>
-      </div>
-    )
-  }
-
-  return null
 }
