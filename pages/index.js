@@ -1,7 +1,7 @@
-import { supabase } from 'utils/supabaseClient'
+import useRequireAuth from 'utils/useRequireAuth'
 
 export default function Home() {
-  const isLoggedIn = Boolean(supabase.auth.session())
+  const isLoggedIn = useRequireAuth()
   if (!isLoggedIn) {
     return null
   }

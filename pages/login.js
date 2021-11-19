@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/router'
-import { supabase } from 'utils/supabaseClient'
-import { Button } from '../components/Button'
+import Link from 'next/link'
 
+import { supabase } from 'utils/supabaseClient'
+import { Button } from 'components/Button'
 import Input from 'components/Input'
 
 export default function Login() {
+  const router = useRouter()
+  const isLoggedIn = Boolean(supabase.auth.session())
+  if (isLoggedIn) {
+    router.push('/')
+  }
   /**
    * @typedef LoginForm
    * @property {string} email
@@ -20,8 +26,6 @@ export default function Login() {
   } = useForm({
     defaultValues: /** @type {LoginForm} */ ({}),
   })
-
-  const router = useRouter()
 
   const [credentialError, setCredentialError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -76,6 +80,9 @@ export default function Login() {
         <div className="mt-4">
           <Button disabled={loading}>Log in</Button>
         </div>
+        <Link href="forget-password">
+          <a className="inline-block mt-2 underline">Forget password?</a>
+        </Link>
       </form>
     </div>
   )
