@@ -56,7 +56,7 @@ export default function Login() {
   }, [setFocus])
 
   return (
-    <div className="h-screen grid place-items-center">
+    <div className="h-full grid place-items-center">
       <form onSubmit={handleSubmit(onSubmit)} className="max-w-md w-full">
         <ErrorMessage error={credentialError && { message: credentialError }} />
         <Input

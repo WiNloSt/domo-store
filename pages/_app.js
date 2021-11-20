@@ -5,6 +5,7 @@ import 'twind/shim'
 import { supabase } from 'utils/supabaseClient'
 
 import { LinkButton } from 'components/LinkButton'
+import './_app.style.css'
 
 export default function MyApp({ Component, pageProps }) {
   return (
@@ -15,8 +16,12 @@ export default function MyApp({ Component, pageProps }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <SupabaseAuthRedirection>
-        <Nav />
-        <Component {...pageProps} />
+        <div className="min-h-full flex flex-col">
+          <Nav />
+          <div className="flex-1 h-0 mx-8">
+            <Component {...pageProps} />
+          </div>
+        </div>
       </SupabaseAuthRedirection>
     </>
   )
