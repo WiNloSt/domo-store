@@ -56,7 +56,9 @@ function Nav() {
           </li>
         ) : (
           <li className="ml-auto">
-            <Link href="/login">Sign in</Link>
+            <Link href="/login">
+              <a className="hover:underline">Sign in</a>
+            </Link>
           </li>
         )}
       </ul>

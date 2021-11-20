@@ -1,4 +1,5 @@
 import React from 'react'
+import classNames from 'classnames'
 
 const Input = React.forwardRef(
   /**
@@ -6,10 +7,11 @@ const Input = React.forwardRef(
    *
    * @typedef AdditionalInputProps
    * @property {string} [label]
+   * @property {boolean} [fluid]
    *
    * @param {InputProps} props
    */
-  function Input({ className, label, ...props }, ref) {
+  function Input({ className, fluid, label, ...props }, ref) {
     return (
       <div className={className}>
         {label && (
@@ -19,7 +21,12 @@ const Input = React.forwardRef(
         )}
         <input
           ref={ref}
-          className="mt-1 rounded py-1 px-2 ring(1 gray-400) focus-visible:(ring-2 outline-none)"
+          className={classNames(
+            'mt-1 rounded py-1 px-2 ring(1 gray-400) focus-visible:(ring-2 outline-none)',
+            {
+              'w-full': fluid,
+            }
+          )}
           {...props}
         />
       </div>

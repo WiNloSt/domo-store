@@ -3,6 +3,13 @@ import { useRouter } from 'next/router'
 
 import { sessionContext } from 'pages/_app'
 
+/**
+ * @typedef ReturnValue
+ * @property {boolean} isLoggedIn
+ * @property {import('@supabase/supabase-js').Session?} session
+ *
+ * @returns {ReturnValue}
+ */
 export default function useRequireAuth() {
   const session = useContext(sessionContext)
   const router = useRouter()
@@ -14,5 +21,8 @@ export default function useRequireAuth() {
     }
   }, [router, session])
 
-  return Boolean(session)
+  return {
+    isLoggedIn: Boolean(session),
+    session,
+  }
 }

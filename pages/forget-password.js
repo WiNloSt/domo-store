@@ -70,7 +70,6 @@ export default function ForgetPassword() {
         </div>
         <div className="mt-2">
           <LinkButton
-            className="underline"
             onClick={() => {
               router.back()
             }}>

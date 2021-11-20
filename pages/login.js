@@ -72,6 +72,7 @@ export default function Login() {
           className="mt-2"
           label="Password"
           id="password"
+          autoComplete="current-password"
           {...register('password', {
             required: 'Password is required.',
           })}
@@ -81,8 +82,8 @@ export default function Login() {
         <div className="mt-4">
           <Button disabled={loading}>Log in</Button>
         </div>
-        <Link href="forget-password">
-          <a className="inline-block mt-2 underline">Forget password?</a>
+        <Link href="/forget-password">
+          <a className="inline-block mt-2 hover:underline">Forget password?</a>
         </Link>
       </form>
     </div>

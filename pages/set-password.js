@@ -54,6 +54,7 @@ export default function SetPassword() {
             minLength: { value: 8, message: 'Password must be at least 8 characters long.' },
           })}
           type="password"
+          autoComplete="new-password"
         />
         <ErrorMessage error={errors.password} />
         <Input
