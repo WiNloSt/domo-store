@@ -92,7 +92,7 @@ export function ProductForm({
           {...register('quantity', {
             valueAsNumber: true,
             validate: {
-              positive: (quantity) => quantity >= 0 || 'Quantity must equan or more than 0.',
+              positive: (quantity) => quantity >= 0 || 'Quantity must equal or more than 0.',
               cannotIncrement: (quantity) => {
                 if (product) {
                   return (
