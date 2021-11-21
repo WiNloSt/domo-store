@@ -106,6 +106,24 @@ function Products({ className }) {
     }
   }
 
+  /**
+   *
+   * @param {Product} productToBeDeleted
+   */
+  function handleDeleteProduct(productToBeDeleted) {
+    supabase
+      .from('products')
+      .delete()
+      .match({ id: productToBeDeleted.id })
+      .then(({ error }) => {
+        if (!error) {
+          setProducts((products) => {
+            return products.filter((product) => product.id !== productToBeDeleted.id)
+          })
+        }
+      })
+  }
+
   return (
     <>
       <table className={classNames('w-full', className)}>
@@ -129,6 +147,24 @@ function Products({ className }) {
                 <td className="px-3 py-2 border border-gray-400">{product.name}</td>
                 <td className="px-3 py-2 border border-gray-400 text-right">{product.price}</td>
                 <td className="px-3 py-2 border border-gray-400 text-right">{product.quantity}</td>
+                {isAdmin && (
+                  <td
+                    className="px-3 py-2 bg-white cursor-auto"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                    }}>
+                    <span
+                      className="opacity-0 hover:opacity-100 cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (confirm(`Are you sure you want to delete "${product.name}"`)) {
+                          handleDeleteProduct(product)
+                        }
+                      }}>
+                      ❌
+                    </span>
+                  </td>
+                )}
               </tr>
             )
           })}
