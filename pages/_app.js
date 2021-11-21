@@ -39,7 +39,7 @@ function SupabaseAuthRedirection({ children }) {
   const [session, setSession] = useState(
     /** @type {import('@supabase/gotrue-js').Session?} */ (supabase.auth.session())
   )
-  const [userRole, setUserRole] = useState()
+  const [userRole, setUserRole] = useState(null)
 
   useEffect(() => {
     if (session) {
@@ -69,7 +69,7 @@ function SupabaseAuthRedirection({ children }) {
   const contextValue = useMemo(() => {
     return {
       session,
-      isAdmin: userRole === 'admin',
+      isAdmin: userRole && userRole === 'admin',
     }
   }, [session, userRole])
 

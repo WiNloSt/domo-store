@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <div className="w-full max-w-md mx-auto my-4">
       <div className="mx-3">
-        <h1 className="text-xl font-bold">Products</h1>
+        <h1 className="text-xl font-semibold">Products</h1>
         <Products className="mt-2" />
       </div>
     </div>
