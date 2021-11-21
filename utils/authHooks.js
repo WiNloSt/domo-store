@@ -27,6 +27,18 @@ export function useRequireAuth() {
   }
 }
 
+export function useRequireAdmin() {
+  const isAdmin = useIsAdmin()
+  const router = useRouter()
+
+  useEffect(() => {
+    // isAdmin can be null while the API is loading.
+    if (isAdmin === false) {
+      router.push('/')
+    }
+  }, [isAdmin, router])
+}
+
 /**
  * @returns {boolean?}
  */

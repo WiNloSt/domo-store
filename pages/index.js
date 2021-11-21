@@ -112,6 +112,7 @@ function Products({ className }) {
         <thead>
           <tr>
             <th className="pb-2">Name</th>
+            <th className="pb-2">Price</th>
             <th className="pb-2">Quantity</th>
           </tr>
         </thead>
@@ -126,7 +127,8 @@ function Products({ className }) {
                 }}
                 className="cursor-pointer hover:bg-gray-100">
                 <td className="px-3 py-2 border border-gray-400">{product.name}</td>
-                <td className="px-3 py-2 border border-gray-400">{product.quantity}</td>
+                <td className="px-3 py-2 border border-gray-400 text-right">{product.price}</td>
+                <td className="px-3 py-2 border border-gray-400 text-right">{product.quantity}</td>
               </tr>
             )
           })}

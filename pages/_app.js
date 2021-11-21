@@ -6,6 +6,7 @@ import { supabase } from 'utils/supabaseClient'
 
 import { LinkButton } from 'components/LinkButton'
 import './_app.style.css'
+import { useIsAdmin } from 'utils/authHooks'
 
 export default function MyApp({ Component, pageProps }) {
   return (
@@ -77,6 +78,7 @@ function SupabaseAuthRedirection({ children }) {
 
 function Nav() {
   const isLoggedIn = Boolean(supabase.auth.session())
+  const isAdmin = useIsAdmin()
 
   function handleSignOut() {
     supabase.auth.signOut()
@@ -85,12 +87,20 @@ function Nav() {
   return (
     <nav>
       <ul className="list-none flex space-x-4 py-4 px-20 bg-gray-500 text-white">
+        <Link href="/">
+          <a className="hover:underline">Products</a>
+        </Link>
+        {isAdmin && (
+          <Link href="/audit-logs">
+            <a className="hover:underline">Audit logs</a>
+          </Link>
+        )}
         {isLoggedIn ? (
-          <li className="ml-auto">
+          <li className="!ml-auto">
             <LinkButton onClick={handleSignOut}>Sign out</LinkButton>
           </li>
         ) : (
-          <li className="ml-auto">
+          <li className="!ml-auto">
             <Link href="/login">
               <a className="hover:underline">Sign in</a>
             </Link>
