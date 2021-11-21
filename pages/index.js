@@ -111,9 +111,9 @@ function Products({ className }) {
       <table className={classNames('w-full', className)}>
         <thead>
           <tr>
-            <th className="pb-2">Name</th>
-            <th className="pb-2">Price</th>
-            <th className="pb-2">Quantity</th>
+            <th className="pb-2 font-semibold">Name</th>
+            <th className="pb-2 font-semibold">Price (฿)</th>
+            <th className="pb-2 font-semibold">Quantity</th>
           </tr>
         </thead>
         <tbody>
