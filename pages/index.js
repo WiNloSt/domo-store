@@ -4,11 +4,8 @@ import { Dialog, Transition } from '@headlessui/react'
 import { LinkButton } from 'components/LinkButton'
 import { supabase } from 'utils/supabaseClient'
 import useRequireAuth from 'utils/useRequireAuth'
-import { useForm } from 'react-hook-form'
-import Input from 'components/Input'
-import { ErrorMessage } from 'components/ErrorMessage'
-import { Button } from 'components/Button'
 import classNames from 'classnames'
+import { ProductForm } from '../components/ProductForm'
 
 export default function Home() {
   const { isLoggedIn } = useRequireAuth()
@@ -31,6 +28,7 @@ export default function Home() {
  * @property {string} id
  * @property {string} name
  * @property {number} quantity
+ * @property {number} price
  */
 
 /**
@@ -44,7 +42,9 @@ function Products({ className }) {
   const [products, setProducts] = useState(/** @type {Product[]} */ ([]))
   const [userRole, setUserRole] = useState(/** @type {'admin'|'cashier'|null} */ (null))
   const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false)
+  const [isEditProductLoading, setIsEditProductLoading] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(/** @type {Product?} */ (null))
+  const [errorMessage, setErrorMessage] = useState('')
 
   const { session } = useRequireAuth()
 
@@ -74,13 +74,47 @@ function Products({ className }) {
   if (products.length < 1) {
     return <>loading...</>
   }
-  function handleProductEdited(editedProduct) {
-    setProducts((products) => {
-      const index = products.findIndex((product) => product.id === editedProduct.id)
 
-      return [...products.slice(0, index), editedProduct, ...products.slice(index + 1)]
-    })
-    setIsEditProductModalOpen(false)
+  /**
+   *
+   * @param {Product} data
+   */
+  function handleEditProduct(data) {
+    setIsEditProductLoading(true)
+    supabase
+      .from('products')
+      .update({
+        name: data.name,
+        quantity: data.quantity,
+        price: data.price,
+      })
+      .match({
+        id: selectedProduct?.id,
+      })
+      .then(({ data, error }) => {
+        setIsEditProductLoading(false)
+        if (data) {
+          handleAfterEditProduct(data[0])
+          setErrorMessage('')
+        } else {
+          if (
+            error?.message === 'duplicate key value violates unique constraint "products_name_key"'
+          ) {
+            setErrorMessage('Product name needs to be unique.')
+          } else {
+            setErrorMessage('Cannot edit product.')
+          }
+        }
+      })
+
+    function handleAfterEditProduct(editedProduct) {
+      setProducts((products) => {
+        const index = products.findIndex((product) => product.id === editedProduct.id)
+
+        return [...products.slice(0, index), editedProduct, ...products.slice(index + 1)]
+      })
+      setIsEditProductModalOpen(false)
+    }
   }
 
   return (
@@ -124,20 +158,32 @@ function Products({ className }) {
           <Dialog.Overlay className="z-0 fixed inset-0" />
           <div className="min-h-screen grid place-items-center">
             <div className="z-0 bg-white rounded-xl max-w-md w-full p-6 border shadow-lg">
-              <EditProductForm
-                product={selectedProduct}
-                onProductEdited={handleProductEdited}
-                onCancel={() => {
-                  setIsEditProductModalOpen(false)
-                }}
-              />
+              {selectedProduct && (
+                <>
+                  <Dialog.Title as="h2" className="text-lg font-semibold">
+                    Edit {selectedProduct.name}
+                  </Dialog.Title>
+                  <ProductForm
+                    errorMessage={errorMessage}
+                    isAdmin={userRole === 'admin'}
+                    autoFocusField="quantity"
+                    product={selectedProduct}
+                    submitLabel="Edit"
+                    loading={isEditProductLoading}
+                    onSubmit={handleEditProduct}
+                    onCancel={() => {
+                      setIsEditProductModalOpen(false)
+                    }}
+                  />
+                </>
+              )}
             </div>
           </div>
         </Dialog>
       </Transition>
       {userRole === 'admin' && (
         <AddNewProductButton
-          onNewProductAdded={(newProduct) => {
+          onAfterAddProduct={(newProduct) => {
             setProducts((products) => {
               return [newProduct, ...products]
             })
@@ -152,17 +198,51 @@ function Products({ className }) {
 /**
  * @typedef AddNewProductButtonProps
  * @property {string} [className]
- * @property {function}onNewProductAdded
+ * @property {function}onAfterAddProduct
  *
  * @param {AddNewProductButtonProps} props
  * @returns
  */
-function AddNewProductButton({ className, onNewProductAdded }) {
+function AddNewProductButton({ className, onAfterAddProduct }) {
   const [isOpen, setIsOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isAddProductLoading, setIsAddProductLoading] = useState(false)
 
-  function handleNewProductAdded(newProduct) {
-    setIsOpen(false)
-    onNewProductAdded(newProduct)
+  /**
+   *
+   * @param {Product} data
+   */
+  function handleAddProduct(data) {
+    setIsAddProductLoading(true)
+    supabase
+      .from('products')
+      .insert([
+        {
+          name: data.name,
+          quantity: data.quantity,
+          price: data.price,
+        },
+      ])
+      .then(({ data, error }) => {
+        setIsAddProductLoading(false)
+        if (data) {
+          handleAfterAddProduct(data[0])
+          setErrorMessage('')
+        } else {
+          if (
+            error?.message === 'duplicate key value violates unique constraint "products_name_key"'
+          ) {
+            setErrorMessage('Product name needs to be unique.')
+          } else {
+            setErrorMessage('Cannot create product.')
+          }
+        }
+      })
+
+    function handleAfterAddProduct(newProduct) {
+      setIsOpen(false)
+      onAfterAddProduct(newProduct)
+    }
   }
 
   return (
@@ -190,8 +270,16 @@ function AddNewProductButton({ className, onNewProductAdded }) {
           <Dialog.Overlay className="z-0 fixed inset-0" />
           <div className="min-h-screen grid place-items-center">
             <div className="z-0 bg-white rounded-xl max-w-md w-full p-6 border shadow-lg">
-              <AddNewProductForm
-                onNewProductAdded={handleNewProductAdded}
+              <Dialog.Title as="h2" className="text-lg font-semibold">
+                Add new product
+              </Dialog.Title>
+              <ProductForm
+                errorMessage={errorMessage}
+                isAdmin
+                autoFocusField="name"
+                submitLabel="Add new product"
+                loading={isAddProductLoading}
+                onSubmit={handleAddProduct}
                 onCancel={() => {
                   setIsOpen(false)
                 }}
@@ -201,179 +289,5 @@ function AddNewProductButton({ className, onNewProductAdded }) {
         </Dialog>
       </Transition>
     </>
-  )
-}
-
-function AddNewProductForm({ onNewProductAdded, onCancel }) {
-  /**
-   * @typedef AddNewProductForm
-   * @property {string} productName
-   */
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setFocus,
-  } = useForm({
-    defaultValues: /** @type {AddNewProductForm} */ ({}),
-  })
-
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    setFocus('productName')
-  }, [setFocus])
-
-  function onSubmit(data) {
-    setLoading(true)
-    supabase
-      .from('products')
-      .insert([
-        {
-          name: data.productName,
-          quantity: 0,
-        },
-      ])
-      .then(({ data }) => {
-        setLoading(false)
-        if (data) {
-          onNewProductAdded(data[0])
-        }
-      })
-  }
-
-  return (
-    <div>
-      <Dialog.Title as="h2" className="text-lg font-semibold">
-        Add new product
-      </Dialog.Title>
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-md w-full mt-2">
-        <Input
-          fluid
-          label="Product name"
-          id="productName"
-          {...register('productName', {
-            required: 'Product name is required.',
-          })}
-        />
-        <ErrorMessage error={errors.productName} />
-        <div className="mt-4 inline-block">
-          <Button disabled={loading}>Add new product</Button>
-        </div>
-        <LinkButton className="ml-4" onClick={onCancel}>
-          Cancel
-        </LinkButton>
-      </form>
-    </div>
-  )
-}
-
-/**
- * @typedef EditProductFormProps
- * @property {Product?} product
- * @property {function} onProductEdited
- * @property {function} onCancel
- *
- * @param {EditProductFormProps} props
- */
-function EditProductForm({ product, onProductEdited, onCancel }) {
-  /**
-   * @typedef EditProductForm
-   * @property {string} name
-   * @property {number} quantity
-   */
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setFocus,
-    setValue,
-    getValues,
-  } = useForm({
-    defaultValues: /** @type {EditProductForm} */ ({
-      name: product?.name,
-      quantity: product?.quantity,
-    }),
-  })
-
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    setFocus('quantity')
-  }, [setFocus])
-
-  function onSubmit(data) {
-    setLoading(true)
-    supabase
-      .from('products')
-      .update({
-        name: data?.name,
-        quantity: data?.quantity,
-      })
-      .match({
-        id: product?.id,
-      })
-      .then(({ data }) => {
-        setLoading(false)
-        if (data) {
-          onProductEdited(data[0])
-        }
-      })
-  }
-
-  return (
-    <div>
-      <Dialog.Title as="h2" className="text-lg font-semibold">
-        Edit {product?.name}
-      </Dialog.Title>
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-md w-full mt-2">
-        <Input
-          label="Name"
-          id="name"
-          {...register('name', {
-            required: 'Product name is required.',
-          })}
-        />
-        <ErrorMessage error={errors.name} />
-        <div className="mt-2">
-          <Input
-            as={Fragment}
-            label="Quantity"
-            autoComplete="off"
-            id="quantity"
-            type="number"
-            {...register('quantity', {
-              valueAsNumber: true,
-              validate: (quantity) => quantity >= 0 || 'Quantity must equan or more than 0.',
-            })}
-          />
-          <Button
-            type="button"
-            className="text-2xl px-4 py-1 ml-1"
-            basic
-            onClick={() => {
-              setValue('quantity', getValues('quantity') - 1)
-            }}>
-            -
-          </Button>
-          <Button
-            type="button"
-            className="text-2xl px-4 py-1 ml-1"
-            basic
-            onClick={() => {
-              setValue('quantity', getValues('quantity') + 1)
-            }}>
-            +
-          </Button>
-        </div>
-        <ErrorMessage error={errors.quantity} />
-        <div className="mt-4 inline-block">
-          <Button disabled={loading}>Edit</Button>
-        </div>
-        <LinkButton className="ml-4" onClick={onCancel}>
-          Cancel
-        </LinkButton>
-      </form>
-    </div>
   )
 }

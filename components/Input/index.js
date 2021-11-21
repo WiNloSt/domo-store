@@ -10,13 +10,15 @@ const Input = React.forwardRef(
    * @typedef AdditionalInputProps
    * @property {string} [label]
    * @property {boolean} [fluid]
-   * @property {keyof import('react').ReactHTML|React.FC} [as='div']
+   * @property {keyof import('react').ReactHTML|React.FC|React.Fragment} [as='div']
    *
    * @param {InputProps} props
    */
   function Input({ className, as: As = 'div', fluid, label, ...props }, ref) {
+    const containerProps = As === React.Fragment ? {} : { className }
+
     return (
-      <As className={className}>
+      <As {...containerProps}>
         {label && (
           <label className="block" htmlFor={props.id}>
             {label}:
