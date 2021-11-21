@@ -10,8 +10,8 @@ import { sessionContext } from 'pages/_app'
  *
  * @returns {ReturnValue}
  */
-export default function useRequireAuth() {
-  const session = useContext(sessionContext)
+export function useRequireAuth() {
+  const { session } = useContext(sessionContext)
   const router = useRouter()
 
   useEffect(() => {
@@ -25,4 +25,12 @@ export default function useRequireAuth() {
     isLoggedIn: Boolean(session),
     session,
   }
+}
+
+/**
+ * @returns {boolean?}
+ */
+export function useIsAdmin() {
+  const { isAdmin } = useContext(sessionContext)
+  return isAdmin
 }

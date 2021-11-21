@@ -3,7 +3,7 @@ import { Dialog, Transition } from '@headlessui/react'
 
 import { LinkButton } from 'components/LinkButton'
 import { supabase } from 'utils/supabaseClient'
-import useRequireAuth from 'utils/useRequireAuth'
+import { useRequireAuth, useIsAdmin } from 'utils/authHooks'
 import classNames from 'classnames'
 import { ProductForm } from '../components/ProductForm'
 
@@ -40,26 +40,15 @@ export default function Home() {
  */
 function Products({ className }) {
   const [products, setProducts] = useState(/** @type {Product[]} */ ([]))
-  const [userRole, setUserRole] = useState(/** @type {'admin'|'cashier'|null} */ (null))
   const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false)
   const [isEditProductLoading, setIsEditProductLoading] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(/** @type {Product?} */ (null))
   const [errorMessage, setErrorMessage] = useState('')
 
   const { session } = useRequireAuth()
+  const isAdmin = useIsAdmin()
 
   useEffect(() => {
-    supabase
-      .from('users_roles')
-      .select('role')
-      .match({ user: session?.user?.id })
-      .single()
-      .then(({ data }) => {
-        if (data) {
-          setUserRole(data.role)
-        }
-      })
-
     supabase
       .from('products')
       .select()
@@ -165,7 +154,7 @@ function Products({ className }) {
                   </Dialog.Title>
                   <ProductForm
                     errorMessage={errorMessage}
-                    isAdmin={userRole === 'admin'}
+                    isAdmin={Boolean(isAdmin)}
                     autoFocusField="quantity"
                     product={selectedProduct}
                     submitLabel="Edit"
@@ -181,7 +170,7 @@ function Products({ className }) {
           </div>
         </Dialog>
       </Transition>
-      {userRole === 'admin' && (
+      {isAdmin && (
         <AddNewProductButton
           onAfterAddProduct={(newProduct) => {
             setProducts((products) => {

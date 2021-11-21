@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import 'twind/shim'
@@ -28,21 +28,51 @@ export default function MyApp({ Component, pageProps }) {
 }
 
 export const sessionContext = React.createContext(
-  /** @type {import('@supabase/gotrue-js').Session?} */ (null)
+  /** @type {{session: import('@supabase/gotrue-js').Session?, isAdmin: boolean?}} */ ({
+    session: null,
+    isAdmin: null,
+  })
 )
 
 function SupabaseAuthRedirection({ children }) {
   const [session, setSession] = useState(
     /** @type {import('@supabase/gotrue-js').Session?} */ (supabase.auth.session())
   )
+  const [userRole, setUserRole] = useState()
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((_event, session) => {
+    if (session) {
+      supabase
+        .from('users_roles')
+        .select('role')
+        .match({ user: session?.user?.id })
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            setUserRole(data.role)
+          }
+        })
+    }
+
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
     })
-  }, [])
 
-  return <sessionContext.Provider value={session}>{children}</sessionContext.Provider>
+    return () => {
+      if (data) {
+        data.unsubscribe()
+      }
+    }
+  }, [session])
+
+  const contextValue = useMemo(() => {
+    return {
+      session,
+      isAdmin: userRole === 'admin',
+    }
+  }, [session, userRole])
+
+  return <sessionContext.Provider value={contextValue}>{children}</sessionContext.Provider>
 }
 
 function Nav() {
