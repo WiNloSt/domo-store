@@ -94,7 +94,7 @@ export function ProductForm({
             validate: {
               positive: (quantity) => quantity >= 0 || 'Quantity must equal or more than 0.',
               cannotIncrement: (quantity) => {
-                if (product) {
+                if (!isAdmin && product) {
                   return (
                     quantity <= product.quantity ||
                     'Cannot increse quantity. Please contact an admin to do that for you.'
@@ -117,7 +117,7 @@ export function ProductForm({
           -
         </Button>
         <Button
-          disabled={watch('quantity') >= (product?.quantity || NaN)}
+          disabled={!isAdmin && watch('quantity') >= (product?.quantity || NaN)}
           type="button"
           className="text-2xl px-4 py-1 ml-1"
           basic
