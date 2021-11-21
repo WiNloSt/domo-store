@@ -19,7 +19,7 @@ export default function MyApp({ Component, pageProps }) {
       <SupabaseAuthRedirection>
         <div className="min-h-full flex flex-col">
           <Nav />
-          <div className="flex-1 h-0 mx-8">
+          <div className="flex-1 h-0 mx-4">
             <Component {...pageProps} />
           </div>
         </div>
@@ -86,7 +86,7 @@ function Nav() {
 
   return (
     <nav>
-      <ul className="list-none flex space-x-4 py-4 px-20 bg-gray-500 text-white">
+      <ul className="list-none flex space-x-4 py-4 px-4 sm:px-20 bg-gray-500 text-white">
         <Link href="/">
           <a className="hover:underline">Products</a>
         </Link>

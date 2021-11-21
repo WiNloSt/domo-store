@@ -15,10 +15,8 @@ export default function Home() {
 
   return (
     <div className="w-full max-w-md mx-auto my-4">
-      <div className="mx-3">
-        <h1 className="text-xl font-semibold">Products</h1>
-        <Products className="mt-2" />
-      </div>
+      <h1 className="text-xl font-semibold">Products</h1>
+      <Products className="mt-2" />
     </div>
   )
 }
@@ -154,7 +152,7 @@ function Products({ className }) {
                       e.stopPropagation()
                     }}>
                     <span
-                      className="opacity-0 hover:opacity-100 cursor-pointer"
+                      className="sm:opacity-0 hover:opacity-100 cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation()
                         if (confirm(`Are you sure you want to delete "${product.name}"`)) {
