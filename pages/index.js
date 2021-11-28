@@ -14,7 +14,7 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto my-4">
+    <div className="w-full max-w-3xl mx-auto my-4">
       <h1 className="text-xl font-semibold">Products</h1>
       <Products className="mt-2" />
     </div>
@@ -127,9 +127,9 @@ function Products({ className }) {
       <table className={classNames('w-full', className)}>
         <thead>
           <tr>
-            <th className="pb-2 font-semibold">Name</th>
-            <th className="pb-2 font-semibold">Price (฿)</th>
-            <th className="pb-2 font-semibold">Quantity</th>
+            <th className="pb-2 px-2 font-semibold whitespace-nowrap">Name</th>
+            <th className="pb-2 px-2 font-semibold whitespace-nowrap">Price (฿)</th>
+            <th className="pb-2 px-2 font-semibold whitespace-nowrap">Quantity</th>
           </tr>
         </thead>
         <tbody>
@@ -182,7 +182,7 @@ function Products({ className }) {
           className="fixed inset-0 z-10 overflow-y-auto">
           <Dialog.Overlay className="z-0 fixed inset-0" />
           <div className="min-h-screen grid place-items-center">
-            <div className="z-0 bg-white rounded-xl max-w-md w-full p-6 border shadow-lg">
+            <div className="z-0 bg-white rounded-xl max-w-2xl w-full p-6 border shadow-lg">
               {selectedProduct && (
                 <>
                   <Dialog.Title as="h2" className="text-lg font-semibold">
@@ -294,7 +294,7 @@ function AddNewProductButton({ className, onAfterAddProduct }) {
         <Dialog onClose={() => setIsOpen(false)} className="fixed inset-0 z-10 overflow-y-auto">
           <Dialog.Overlay className="z-0 fixed inset-0" />
           <div className="min-h-screen grid place-items-center">
-            <div className="z-0 bg-white rounded-xl max-w-md w-full p-6 border shadow-lg">
+            <div className="z-0 bg-white rounded-xl max-w-2xl w-full p-6 border shadow-lg">
               <Dialog.Title as="h2" className="text-lg font-semibold">
                 Add new product
               </Dialog.Title>

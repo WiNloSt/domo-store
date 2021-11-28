@@ -58,9 +58,10 @@ export function ProductForm({
   }, [autoFocusField, setFocus])
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-md w-full mt-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full mt-2">
       {errorMessage && <ErrorMessage error={{ message: errorMessage }} />}
       <Input
+        fluid
         disabled={!isAdmin}
         label="Name"
         id="name"
@@ -72,6 +73,7 @@ export function ProductForm({
       <Input
         disabled={!isAdmin}
         className="mt-2"
+        fluid
         label="Price"
         autoComplete="off"
         id="price"
@@ -83,54 +85,58 @@ export function ProductForm({
       />
       <ErrorMessage error={errors.price} />
       <div className="mt-2">
-        <Input
-          as={Fragment}
-          label="Quantity"
-          autoComplete="off"
-          id="quantity"
-          type="number"
-          {...register('quantity', {
-            valueAsNumber: true,
-            validate: {
-              positive: (quantity) => quantity >= 0 || 'Quantity must equal or more than 0.',
-              cannotIncrement: (quantity) => {
-                if (!isAdmin && product) {
-                  return (
-                    quantity <= product.quantity ||
-                    'Cannot increse quantity. Please contact an admin to do that for you.'
-                  )
-                }
-
-                return true
-              },
-            },
-          })}
-        />
-        <Button
-          disabled={watch('quantity') <= 0}
-          type="button"
-          className="text-2xl px-4 py-1 ml-1"
-          basic
-          onClick={() => {
-            setValue('quantity', getValues('quantity') - 1)
-          }}>
-          -
-        </Button>
-        <Button
-          disabled={!isAdmin && watch('quantity') >= (product?.quantity || NaN)}
-          type="button"
-          className="text-2xl px-4 py-1 ml-1"
-          basic
-          onClick={() => {
-            setValue('quantity', getValues('quantity') + 1)
-          }}>
-          +
-        </Button>
+        <label className="inline-block" htmlFor="quantity">
+          Quantity:
+        </label>
         {product && watch('quantity') !== product.quantity && (
           <span className="ml-2 italic text-gray-700">{`(${
             watch('quantity') - product.quantity
           })`}</span>
         )}
+
+        <div className="flex items-baseline">
+          <Input
+            as={Fragment}
+            autoComplete="off"
+            id="quantity"
+            type="number"
+            {...register('quantity', {
+              valueAsNumber: true,
+              validate: {
+                positive: (quantity) => quantity >= 0 || 'Quantity must equal or more than 0.',
+                cannotIncrement: (quantity) => {
+                  if (!isAdmin && product) {
+                    return (
+                      quantity <= product.quantity ||
+                      'Cannot increse quantity. Please contact an admin to do that for you.'
+                    )
+                  }
+                  return true
+                },
+              },
+            })}
+          />
+          <Button
+            disabled={watch('quantity') <= 0}
+            type="button"
+            className="text-2xl px-4 py-1 ml-1"
+            basic
+            onClick={() => {
+              setValue('quantity', getValues('quantity') - 1)
+            }}>
+            -
+          </Button>
+          <Button
+            disabled={!isAdmin && watch('quantity') >= (product?.quantity || NaN)}
+            type="button"
+            className="text-2xl px-4 py-1 ml-1"
+            basic
+            onClick={() => {
+              setValue('quantity', getValues('quantity') + 1)
+            }}>
+            +
+          </Button>
+        </div>
       </div>
       <ErrorMessage error={errors.quantity} />
       <div className="mt-4 inline-block">

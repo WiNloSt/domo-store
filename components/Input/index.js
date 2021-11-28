@@ -27,8 +27,9 @@ const Input = React.forwardRef(
         <input
           ref={ref}
           className={classNames(
-            'mt-1 rounded py-1 px-2 ring(1 gray-400) focus-visible:(ring-2 outline-none)',
+            'rounded py-1 px-2 ring(1 gray-400) focus-visible:(ring-2 outline-none)',
             {
+              'mt-1': label,
               'w-full': fluid,
             },
             style.button
